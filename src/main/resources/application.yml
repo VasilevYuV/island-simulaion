@@ -1,0 +1,99 @@
+spring:
+  application:
+    name: island-simulation
+  main:
+    allow-circular-references: true
+  datasource:
+    url: jdbc:h2:mem:island_db
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        show_sql: true
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  web:
+    resources:
+      cache:
+        period: 0
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  address: 0.0.0.0
+
+# Конфигурация симуляции острова
+island:
+  simulation:
+    min-width: 50
+    max-width: 200
+    min-height: 10
+    max-height: 50
+    default-width: 100
+    default-height: 20
+    turn-duration-ms: 1000
+    statistics-save-interval: 10
+
+    # Начальная популяция
+    initial-wolves: 10
+    initial-boas: 5
+    initial-foxes: 8
+    initial-bears: 2
+    initial-eagles: 6
+    initial-horses: 15
+    initial-deer: 12
+    initial-rabbits: 50
+    initial-mice: 100
+    initial-goats: 20
+    initial-sheep: 18
+    initial-boars: 10
+    initial-buffalo: 5
+    initial-ducks: 30
+    initial-caterpillars: 200
+    initial-plants: 1000
+
+    # Настройки поведения
+    reproduction-probability: 0.3
+    herbivore-reproduction-bonus: 0.1
+    move-probability: 0.8
+
+    # Лимиты
+    max-turns-without-animals: 100
+    max-total-turns: 10000
+
+# Логирование
+logging:
+  level:
+    com.VasilevYuV.island: DEBUG
+    org.springframework: INFO
+    org.hibernate: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/island-simulation.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+    shutdown:
+      enabled: false

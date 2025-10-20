@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Island Simulation - Configurator</title>
+    <style>
+        body {
+            font-family: "Manrope_Cut_008 Medium", sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .config-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        input[type="number"]:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .range-value {
+            display: inline-block;
+            margin-left: 10px;
+            color: #667eea;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: right;
+        }
+        .config-section {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .config-section h3 {
+            margin-top: 0;
+            color: #2d3748;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .btn-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .btn-start:hover {
+            transform: translateY(-2px);
+        }
+        .animal-slider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            padding: 5px 0;
+        }
+        .animal-slider label {
+            min-width: 140px;
+            margin: 0;
+            font-weight: normal;
+        }
+        .animal-slider input[type="range"] {
+            flex: 1;
+        }
+        .animal-category {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .animal-category h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2d3748;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="config-container">
+    <h1>🏝️ Island Simulation Configurator</h1>
+
+    <form th:action="@{/start}" th:object="${config}" method="post">
+        <!-- Размеры острова -->
+        <div class="config-section">
+            <h3>📏 Island Size</h3>
+            <div class="form-group">
+                <label for="width">Width (50-200):
+                    <span class="range-value" id="widthValue">100</span>
+                </label>
+                <input type="range" id="width" th:field="*{width}" min="50" max="200" value="100"
+                       oninput="document.getElementById('widthValue').textContent = this.value">
+            </div>
+            <div class="form-group">
+                <label for="height">Height (10-50):
+                    <span class="range-value" id="heightValue">20</span>
+                </label>
+                <input type="range" id="height" th:field="*{height}" min="10" max="50" value="20"
+                       oninput="document.getElementById('heightValue').textContent = this.value">
+            </div>
+        </div>
+
+        <!-- Начальная популяция -->
+        <div class="config-section">
+            <h3>🐺 Initial Population</h3>
+
+            <div class="animal-category">
+                <h4>🦁 Predators</h4>
+                <div class="animal-slider">
+                    <label for="initialWolves">🐺 Wolves:</label>
+                    <input type="range" id="initialWolves" th:field="*{initialWolves}" min="0" max="30" value="10">
+                    <span class="range-value" id="wolvesValue">10</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialBoas">🐍 Boas:</label>
+                    <input type="range" id="initialBoas" th:field="*{initialBoas}" min="0" max="20" value="5">
+                    <span class="range-value" id="boasValue">5</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialFoxes">🦊 Foxes:</label>
+                    <input type="range" id="initialFoxes" th:field="*{initialFoxes}" min="0" max="25" value="8">
+                    <span class="range-value" id="foxesValue">8</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialBears">🐻 Bears:</label>
+                    <input type="range" id="initialBears" th:field="*{initialBears}" min="0" max="10" value="2">
+                    <span class="range-value" id="bearsValue">2</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialEagles">🦅 Eagles:</label>
+                    <input type="range" id="initialEagles" th:field="*{initialEagles}" min="0" max="15" value="6">
+                    <span class="range-value" id="eaglesValue">6</span>
+                </div>
+            </div>
+
+            <div class="animal-category">
+                <h4>🐮 Herbivores</h4>
+                <div class="animal-slider">
+                    <label for="initialHorses">🐎 Horses:</label>
+                    <input type="range" id="initialHorses" th:field="*{initialHorses}" min="0" max="30" value="15">
+                    <span class="range-value" id="horsesValue">15</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialDeer">🦌 Deer:</label>
+                    <input type="range" id="initialDeer" th:field="*{initialDeer}" min="0" max="25" value="12">
+                    <span class="range-value" id="deerValue">12</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialRabbits">🐇 Rabbits:</label>
+                    <input type="range" id="initialRabbits" th:field="*{initialRabbits}" min="0" max="100" value="50">
+                    <span class="range-value" id="rabbitsValue">50</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialMice">🐁 Mice:</label>
+                    <input type="range" id="initialMice" th:field="*{initialMice}" min="0" max="200" value="100">
+                    <span class="range-value" id="miceValue">100</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialGoats">🐐 Goats:</label>
+                    <input type="range" id="initialGoats" th:field="*{initialGoats}" min="0" max="40" value="20">
+                    <span class="range-value" id="goatsValue">20</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialSheep">🐑 Sheep:</label>
+                    <input type="range" id="initialSheep" th:field="*{initialSheep}" min="0" max="35" value="18">
+                    <span class="range-value" id="sheepValue">18</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialBoars">🐗 Boars:</label>
+                    <input type="range" id="initialBoars" th:field="*{initialBoars}" min="0" max="20" value="10">
+                    <span class="range-value" id="boarsValue">10</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialBuffalo">🐃 Buffalo:</label>
+                    <input type="range" id="initialBuffalo" th:field="*{initialBuffalo}" min="0" max="15" value="5">
+                    <span class="range-value" id="buffaloValue">5</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialDucks">🦆 Ducks:</label>
+                    <input type="range" id="initialDucks" th:field="*{initialDucks}" min="0" max="50" value="30">
+                    <span class="range-value" id="ducksValue">30</span>
+                </div>
+                <div class="animal-slider">
+                    <label for="initialCaterpillars">🐛 Caterpillars:</label>
+                    <input type="range" id="initialCaterpillars" th:field="*{initialCaterpillars}" min="0" max="300" value="200">
+                    <span class="range-value" id="caterpillarsValue">200</span>
+                </div>
+            </div>
+
+            <div class="animal-category">
+                <h4>🌿 Plants</h4>
+                <div class="animal-slider">
+                    <label for="initialPlants">🌱 Plants:</label>
+                    <input type="range" id="initialPlants" th:field="*{initialPlants}" min="0" max="5000" value="1000">
+                    <span class="range-value" id="plantsValue">1000</span>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn-start">🚀 Start Simulation</button>
+    </form>
+</div>
+
+<script>
+    // Функция для инициализации слайдера
+    function initializeSlider(sliderId, valueId) {
+        const slider = document.getElementById(sliderId);
+        const value = document.getElementById(valueId);
+
+        if (slider && value) {
+            value.textContent = slider.value;
+            slider.addEventListener('input', function() {
+                value.textContent = this.value;
+            });
+        }
+    }
+
+    // Инициализация всех слайдеров при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        // Хищники
+        initializeSlider('initialWolves', 'wolvesValue');
+        initializeSlider('initialBoas', 'boasValue');
+        initializeSlider('initialFoxes', 'foxesValue');
+        initializeSlider('initialBears', 'bearsValue');
+        initializeSlider('initialEagles', 'eaglesValue');
+
+        // Травоядные
+        initializeSlider('initialHorses', 'horsesValue');
+        initializeSlider('initialDeer', 'deerValue');
+        initializeSlider('initialRabbits', 'rabbitsValue');
+        initializeSlider('initialMice', 'miceValue');
+        initializeSlider('initialGoats', 'goatsValue');
+        initializeSlider('initialSheep', 'sheepValue');
+        initializeSlider('initialBoars', 'boarsValue');
+        initializeSlider('initialBuffalo', 'buffaloValue');
+        initializeSlider('initialDucks', 'ducksValue');
+        initializeSlider('initialCaterpillars', 'caterpillarsValue');
+
+        // Растения
+        initializeSlider('initialPlants', 'plantsValue');
+
+        // Размеры острова и скорость
+        initializeSlider('width', 'widthValue');
+        initializeSlider('height', 'heightValue');
+        initializeSlider('turnDurationMs', 'speedValue');
+    });
+</script>
+</body>
+</html>

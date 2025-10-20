@@ -1,0 +1,18 @@
+/* Дополнительные стили если понадобятся */
+.cell-wolf { background-color: #9c4221; }
+.cell-rabbit { background-color: #f6e05e; }
+.cell-plant { background-color: #48bb78; }
+
+.legend {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
