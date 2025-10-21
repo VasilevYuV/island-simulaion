@@ -1,6 +1,8 @@
 package com.VasilevYuV.island.location;
 
 import com.VasilevYuV.island.animals.Animal;
+import com.VasilevYuV.island.config.AnimalConfig;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
@@ -13,12 +15,12 @@ public class Location {
     private final Lock lock;
     private int plantCount;
 
-    public Location(int x, int y) {
+    public Location(int x, int y, int plantCount) {
         this.x = x;
         this.y = y;
         this.animals = new CopyOnWriteArrayList<>();
         this.lock = new ReentrantLock();
-        this.plantCount = (int) (Math.random() * 20) + 10;
+        this.plantCount = plantCount;
     }
 
     public int getX() {
@@ -76,7 +78,7 @@ public class Location {
     }
 
     public void growPlants() {
-        plantCount = Math.min(plantCount + 5, 200);
+        plantCount = Math.min(plantCount + 2, 20);
     }
 
     public void consumePlants(int amount) {
@@ -93,11 +95,25 @@ public class Location {
                 .toList();
     }
 
-    public boolean canAddAnimal(Class<? extends Animal> animalClass) {
-        long count = animals.stream()
-                .filter(animal -> animal.getClass().equals(animalClass) && animal.isAlive())
+    public boolean canAddAnimal(Class<? extends Animal> animalType) {
+        int currentCount = getAnimalsCount(animalType);
+        int maxCount = getMaxAnimalsPerType(animalType);
+        return currentCount < maxCount;
+    }
+
+    public int getAnimalsCount(Class<? extends Animal> animalType) {
+        return (int) animals.stream()
+                .filter(animal -> animalType.isInstance(animal) && animal.isAlive())
                 .count();
-        // Здесь должна быть проверка на максимальное количество из конфигурации
-        return count < 30; // Временное значение
+    }
+
+    public int getMaxAnimalsPerType(Class<? extends Animal> animalType) {
+        try {
+            // Получаем конфиг для этого типа животного
+            AnimalConfig config = AnimalConfig.valueOf(animalType.getSimpleName().toUpperCase());
+            return config.getMaxPerLocation();
+        } catch (IllegalArgumentException e) {
+            return 10; // значение по умолчанию
+        }
     }
 }

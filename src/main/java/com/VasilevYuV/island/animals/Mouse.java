@@ -20,7 +20,7 @@ public class Mouse extends Herbivore {
 
     @Override
     public double getEatingProbability(Animal animal) {
-        if (animal instanceof Caterpillar) return 90.0;
+        if (animal instanceof Caterpillar) return 70.0;
         return 0.0;
     }
 }

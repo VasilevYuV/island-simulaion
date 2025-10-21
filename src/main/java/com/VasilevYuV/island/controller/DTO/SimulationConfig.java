@@ -16,7 +16,7 @@ public class SimulationConfig {
     private int initialHorses = 50;
     private int initialDeer = 50;
     private int initialRabbits = 50;
-    private int initialMice = 100;
+    private int initialMice = 50;
     private int initialGoats = 20;
     private int initialSheep = 18;
     private int initialBoars = 10;
@@ -24,7 +24,7 @@ public class SimulationConfig {
     private int initialDucks = 30;
     private int initialCaterpillars = 200;
 
-    private int initialPlants = 1000;
+    private int initialPlants = 50;
 
     // Getters and Setters для всех полей
     public int getWidth() { return width; }

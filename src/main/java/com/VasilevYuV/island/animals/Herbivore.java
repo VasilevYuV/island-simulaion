@@ -8,12 +8,28 @@ public abstract class Herbivore extends Animal {
     @Override
     public void eat() {
         if (currentLocation == null || !isAlive()) return;
+        int availablePlants = currentLocation.getPlantCount();
 
-        // Поедание растений
-        if (currentLocation.getPlantCount() > 0) {
-            int plantsToEat = Math.min(3, currentLocation.getPlantCount());
-            currentLocation.consumePlants(plantsToEat);
-            this.satiety = Math.min(this.maxFoodRequired, this.satiety + (plantsToEat * 0.1));
+        if (availablePlants > 0) {
+            // УВЕЛИЧИВАЕМ питательность растений для крупных животных
+            double plantNutrition = calculatePlantNutrition();
+
+            double satietyDeficit = this.maxFoodRequired - this.satiety;
+            int plantsNeeded = (int) Math.ceil(satietyDeficit / plantNutrition);
+
+            // УВЕЛИЧИВАЕМ лимит растений за прием пищи для крупных животных
+            int maxPlantsPerMeal = calculateMaxPlantsPerMeal();
+            int plantsToEat = Math.min(availablePlants, Math.min(plantsNeeded, maxPlantsPerMeal));
+
+            if (plantsToEat > 0) {
+                currentLocation.consumePlants(plantsToEat);
+                double nutritionGained = plantsToEat * plantNutrition;
+                this.satiety = Math.min(this.maxFoodRequired, this.satiety + nutritionGained);
+
+                log.debug("{} ate {} plants, gained {} nutrition, satiety: {}/{}",
+                        getClass().getSimpleName(), plantsToEat, nutritionGained,
+                        this.satiety, this.maxFoodRequired);
+            }
         }
 
         // Некоторые травоядные едят гусениц
@@ -32,6 +48,24 @@ public abstract class Herbivore extends Animal {
         }
 
         decreaseSatiety();
+    }
+
+    private double calculatePlantNutrition() {
+        // Крупные животные получают больше питания от растений
+        double baseNutrition = 1.0;
+        if (this.weight > 100) {
+            return baseNutrition + (this.weight * 0.01); // +1% от веса
+        }
+        return baseNutrition;
+    }
+
+    private int calculateMaxPlantsPerMeal() {
+        // Крупные животные могут есть больше растений за раз
+        int baseLimit = (int) Math.ceil(this.maxFoodRequired * 0.3);
+        if (this.weight > 100) {
+            return baseLimit * 2; // Удваиваем лимит для крупных
+        }
+        return baseLimit;
     }
 
     protected boolean canEatOtherAnimals() {

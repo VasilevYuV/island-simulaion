@@ -14,6 +14,7 @@ public class Island {
     private int height;
     private List<Location> locations;
     private AtomicInteger currentTurn;
+    private int plantCount;
     private volatile boolean initialized;
 
     public Island() {
@@ -45,18 +46,19 @@ public class Island {
         return initialized;
     }
 
-    public void initialize(int width, int height) {
+    public void initialize(int width, int height, int plantCount) {
         this.width = width;
         this.height = height;
         this.locations.clear();
         this.currentTurn.set(0);
+        this.plantCount = plantCount;
         initializeIsland();
     }
 
     private void initializeIsland() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                locations.add(new Location(x, y));
+                locations.add(new Location(x, y, plantCount));
             }
         }
         initialized = true;

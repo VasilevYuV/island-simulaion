@@ -58,43 +58,99 @@ public abstract class Animal {
     public abstract void eat();
 
     public void reproduce() {
-        // Усиливаем проверки: животное должно быть достаточно сытым и здоровым
-        if (!alive || currentLocation == null || satiety < maxFoodRequired * 0.5) return;
+        if (!alive || currentLocation == null) return;
 
         try {
             AnimalConfig config = AnimalConfig.valueOf(this.getClass().getSimpleName().toUpperCase());
-            double reproductionProb = config.getReproductionProbability();
+            double baseReproductionProb = config.getReproductionProbability();
 
-            // Дополнительная проверка: должно быть достаточно ресурсов в локации
-            boolean hasEnoughResources = true;
-            if (this instanceof Herbivore) {
-                // Травоядные проверяют наличие растений
-                hasEnoughResources = currentLocation.getPlantCount() > 5;
+            // ДИНАМИЧЕСКАЯ ВЕРОЯТНОСТЬ с разными коэффициентами для разных типов
+            int currentCount = currentLocation.getAnimalsCount(this.getClass());
+            int maxCapacity = currentLocation.getMaxAnimalsPerType(this.getClass());
+
+            // РАЗНЫЕ КОЭФФИЦИЕНТЫ ПЕРЕНАСЕЛЕНИЯ
+            double overcrowdingFactor;
+            if (isSmallAnimal()) {
+                // МЕЛКИЕ ЖИВОТНЫЕ - очень строгие ограничения
+                overcrowdingFactor = Math.max(0, 1.0 - ((double) currentCount / (maxCapacity * 0.3)));
+            } else if (this instanceof Predator) {
+                // ХИЩНИКИ - мягкие ограничения, стимулируем размножение
+                overcrowdingFactor = Math.max(0.5, 1.0 - ((double) currentCount / (maxCapacity * 0.8)));
+            } else {
+                // КРУПНЫЕ ТРАВОЯДНЫЕ - средние ограничения
+                overcrowdingFactor = Math.max(0, 1.0 - ((double) currentCount / (maxCapacity * 0.6)));
             }
 
-            if (Math.random() < reproductionProb && hasEnoughResources) {
-                // Ищем партнеров с еще более строгими условиями
-                long potentialPartners = currentLocation.getAliveAnimals().stream()
-                        .filter(a -> a.getClass() == this.getClass()
-                                && a != this
-                                && a.getSatiety() > a.maxFoodRequired * 0.5) // Повышаем порог сытости
-                        .count();
+            // РАЗНЫЕ ПОРОГИ СЫТОСТИ
+            double satietyThreshold;
+            if (isSmallAnimal()) {
+                satietyThreshold = maxFoodRequired * 0.6; // Мелкие должны быть очень сыты
+            } else if (this instanceof Predator) {
+                satietyThreshold = maxFoodRequired * 0.4; // Хищникам достаточно 40%
+            } else {
+                satietyThreshold = maxFoodRequired * 0.5; // Крупные травоядные - 50%
+            }
 
-                if (potentialPartners > 0) {
+            if (satiety < satietyThreshold) return;
+
+            double actualProbability = baseReproductionProb * overcrowdingFactor;
+
+            // ДОПОЛНИТЕЛЬНЫЕ УСЛОВИЯ ДЛЯ МЕЛКИХ ЖИВОТНЫХ
+            if (isSmallAnimal()) {
+                // Мелкие животные размножаются только если есть достаточно растений
+                boolean hasEnoughPlants = currentLocation.getPlantCount() > 10;
+                if (!hasEnoughPlants) {
+                    actualProbability *= 0.1; // Резко снижаем вероятность
+                }
+            }
+
+            if (Math.random() < actualProbability && currentLocation.canAddAnimal(this.getClass())) {
+                // УПРОЩАЕМ ПОИСК ПАРТНЕРА ДЛЯ ХИЩНИКОВ
+                boolean hasPartner;
+                if (this instanceof Predator) {
+                    // Хищникам достаточно любого партнера того же вида
+                    hasPartner = currentLocation.getAliveAnimals().stream()
+                            .anyMatch(a -> a.getClass() == this.getClass() && a != this);
+                } else {
+                    // Травоядные требуют сытого партнера
+                    hasPartner = currentLocation.getAliveAnimals().stream()
+                            .anyMatch(a -> a.getClass() == this.getClass()
+                                    && a != this
+                                    && a.getSatiety() > a.maxFoodRequired * 0.4);
+                }
+
+                if (hasPartner) {
                     Animal baby = this.getClass().getDeclaredConstructor().newInstance();
-                    if (currentLocation.canAddAnimal(this.getClass())) {
-                        currentLocation.addAnimal(baby);
-                        baby.setCurrentLocation(currentLocation);
+                    currentLocation.addAnimal(baby);
+                    baby.setCurrentLocation(currentLocation);
 
-                        // Увеличиваем затраты на размножение
-                        this.satiety = Math.max(0, this.satiety - this.maxFoodRequired * 0.3);
-                        log.debug("New {} born! Partners: {}", getClass().getSimpleName(), potentialPartners);
+                    // РАЗНЫЕ ЗАТРАТЫ ЭНЕРГИИ
+                    double energyCost;
+                    if (isSmallAnimal()) {
+                        energyCost = maxFoodRequired * 0.4; // Мелкие тратят много
+                    } else if (this instanceof Predator) {
+                        energyCost = maxFoodRequired * 0.2; // Хищники тратят мало
+                    } else {
+                        energyCost = maxFoodRequired * 0.3; // Крупные травоядные - среднее
                     }
+
+                    this.satiety = Math.max(0, this.satiety - energyCost);
+
+                    log.debug("{} reproduced! Population: {}/{}, probability: {}",
+                            getClass().getSimpleName(), currentCount + 1, maxCapacity, actualProbability);
                 }
             }
         } catch (Exception e) {
             log.error("Error in reproduction for {}", getClass().getSimpleName(), e);
         }
+    }
+
+    // Вспомогательный метод для определения мелких животных
+    private boolean isSmallAnimal() {
+        return this instanceof Rabbit ||
+                this instanceof Mouse ||
+                this instanceof Duck ||
+                this instanceof Caterpillar;
     }
 
     public abstract boolean canEat(Animal animal);

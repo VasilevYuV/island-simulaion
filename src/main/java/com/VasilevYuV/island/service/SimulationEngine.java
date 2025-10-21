@@ -54,7 +54,7 @@ public class SimulationEngine {
     }
 
     public void initializeIsland(int width, int height, SimulationConfig config) {
-        island.initialize(width, height);
+        island.initialize(width, height, config.getInitialPlants());
         initializeAnimals(config);
     }
 
