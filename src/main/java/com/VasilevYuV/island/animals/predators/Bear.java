@@ -1,5 +1,7 @@
-package com.VasilevYuV.island.animals;
+package com.VasilevYuV.island.animals.predators;
 
+import com.VasilevYuV.island.animals.*;
+import com.VasilevYuV.island.animals.herbivores.*;
 import com.VasilevYuV.island.config.AnimalConfig;
 
 public class Bear extends Predator {
@@ -16,8 +18,7 @@ public class Bear extends Predator {
     @Override
     public boolean canEat(Animal animal) {
         // Медведь всеядный - ест почти всех кроме других медведей и орлов
-        if (animal instanceof Bear || animal instanceof Eagle) return false;
-        return true;
+        return !(animal instanceof Bear) && !(animal instanceof Eagle);
     }
 
     @Override

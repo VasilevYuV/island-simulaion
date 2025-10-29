@@ -1,7 +1,8 @@
 package com.VasilevYuV.island.service;
 
 import com.VasilevYuV.island.animals.Animal;
-import com.VasilevYuV.island.animals.*;
+import com.VasilevYuV.island.animals.herbivores.*;
+import com.VasilevYuV.island.animals.predators.*;
 import com.VasilevYuV.island.config.AnimalConfig;
 import com.VasilevYuV.island.config.SimulationProperties;
 import com.VasilevYuV.island.controller.DTO.SimulationConfig;
@@ -47,14 +48,13 @@ public class SimulationEngine {
         this.locationExecutor = Executors.newVirtualThreadPerTaskExecutor();
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
         this.turnDurationMs = properties.getTurnDurationMs();
-    }
 
-    public boolean isRunning() {
-        return running;
+        IslandService.setInstance(island);
     }
 
     public void initializeIsland(int width, int height, SimulationConfig config) {
         island.initialize(width, height, config.getInitialPlants());
+        IslandService.setInstance(island);
         initializeAnimals(config);
     }
 
@@ -154,9 +154,7 @@ public class SimulationEngine {
             long startTime = System.currentTimeMillis();
 
             // Обрабатываем все локации параллельно
-            island.getLocations().parallelStream().forEach(location -> {
-                locationExecutor.submit(() -> processLocation(location));
-            });
+            island.getLocations().parallelStream().forEach(location -> locationExecutor.submit(() -> processLocation(location)));
 
             // Удаляем мертвых животных
             island.removeDeadAnimals();
@@ -249,8 +247,6 @@ public class SimulationEngine {
         List<Location> adjacentLocations = new ArrayList<>();
         int x = currentLocation.getX();
         int y = currentLocation.getY();
-
-        // Проверяем все 8 направлений
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 if (dx == 0 && dy == 0) continue;
@@ -350,14 +346,6 @@ public class SimulationEngine {
                 "islandWidth", island.getWidth(),
                 "islandHeight", island.getHeight()
         );
-    }
-
-    public int getTurnDurationMs() {
-        return this.turnDurationMs;
-    }
-
-    public boolean isPaused() {
-        return paused;
     }
 
     @PreDestroy

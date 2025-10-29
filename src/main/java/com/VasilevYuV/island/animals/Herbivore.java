@@ -1,5 +1,10 @@
 package com.VasilevYuV.island.animals;
 
+import com.VasilevYuV.island.animals.herbivores.Boar;
+import com.VasilevYuV.island.animals.herbivores.Caterpillar;
+import com.VasilevYuV.island.animals.herbivores.Duck;
+import com.VasilevYuV.island.animals.herbivores.Mouse;
+
 public abstract class Herbivore extends Animal {
     public Herbivore(double weight, double maxFoodRequired, int maxSpeed) {
         super(weight, maxFoodRequired, maxSpeed);
@@ -11,13 +16,10 @@ public abstract class Herbivore extends Animal {
         int availablePlants = currentLocation.getPlantCount();
 
         if (availablePlants > 0) {
-            // УВЕЛИЧИВАЕМ питательность растений для крупных животных
             double plantNutrition = calculatePlantNutrition();
 
             double satietyDeficit = this.maxFoodRequired - this.satiety;
             int plantsNeeded = (int) Math.ceil(satietyDeficit / plantNutrition);
-
-            // УВЕЛИЧИВАЕМ лимит растений за прием пищи для крупных животных
             int maxPlantsPerMeal = calculateMaxPlantsPerMeal();
             int plantsToEat = Math.min(availablePlants, Math.min(plantsNeeded, maxPlantsPerMeal));
 
@@ -26,7 +28,7 @@ public abstract class Herbivore extends Animal {
                 double nutritionGained = plantsToEat * plantNutrition;
                 this.satiety = Math.min(this.maxFoodRequired, this.satiety + nutritionGained);
 
-                log.debug("{} ate {} plants, gained {} nutrition, satiety: {}/{}",
+                log.trace("{} ate {} plants, gained {} nutrition, satiety: {}/{}",
                         getClass().getSimpleName(), plantsToEat, nutritionGained,
                         this.satiety, this.maxFoodRequired);
             }

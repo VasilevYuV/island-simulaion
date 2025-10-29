@@ -1,15 +1,17 @@
-package com.VasilevYuV.island.animals;
+package com.VasilevYuV.island.animals.herbivores;
 
+import com.VasilevYuV.island.animals.Animal;
+import com.VasilevYuV.island.animals.Herbivore;
 import com.VasilevYuV.island.config.AnimalConfig;
 
-public class Sheep extends Herbivore {
-    private static final AnimalConfig config = AnimalConfig.SHEEP;
+public class Deer extends Herbivore {
+    private static final AnimalConfig config = AnimalConfig.DEER;
 
-    public Sheep() {
+    public Deer() {
         super(config.getWeight(), config.getMaxFoodRequired(), config.getMaxSpeed());
     }
 
-    public Sheep(double weight, double maxFoodRequired, int maxSpeed) {
+    public Deer(double weight, double maxFoodRequired, int maxSpeed) {
         super(weight, maxFoodRequired, maxSpeed);
     }
 

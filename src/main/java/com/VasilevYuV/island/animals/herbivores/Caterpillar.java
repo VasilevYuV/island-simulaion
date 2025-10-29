@@ -1,5 +1,7 @@
-package com.VasilevYuV.island.animals;
+package com.VasilevYuV.island.animals.herbivores;
 
+import com.VasilevYuV.island.animals.Animal;
+import com.VasilevYuV.island.animals.Herbivore;
 import com.VasilevYuV.island.config.AnimalConfig;
 
 public class Caterpillar extends Herbivore {

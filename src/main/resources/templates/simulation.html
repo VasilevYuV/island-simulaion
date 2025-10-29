@@ -299,10 +299,7 @@
         document.getElementById('totalPlants').textContent = state.totalPlants;
         document.getElementById('islandSize').textContent = state.width + 'x' + state.height;
 
-        // Обновляем сетку острова
         updateGrid(state);
-
-        // Обновляем список видов
         updateSpeciesList(state.speciesCount);
     }
 
@@ -314,7 +311,7 @@
         const totalGapWidth = (width - 1) * 1;
         const totalGapHeight = (height - 1) * 1;
 
-        // Учитываем padding grid (10px с каждой стороны = 20px)
+        // Учитываем padding grid
         const availableGridWidth = availableWidth - 10;
         const availableGridHeight = availableHeight - 10;
 
@@ -392,7 +389,6 @@
         }).then(response => response.text())
             .then(result => {
                 console.log('Control result:', result);
-                // Обновляем статус
                 const statusElement = document.getElementById('simulationStatus');
                 if (type === 'PAUSE') {
                     statusElement.textContent = 'Paused';
@@ -417,14 +413,12 @@
             .catch(error => console.error('Speed change error:', error));
     }
 
-    // Ресайз для адаптивности
     window.addEventListener('resize', function() {
         if (currentState) {
             updateGrid(currentState);
         }
     });
 
-    // Подключаемся при загрузке страницы
     connect();
 </script>
 </body>

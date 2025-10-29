@@ -1,15 +1,17 @@
-package com.VasilevYuV.island.animals;
+package com.VasilevYuV.island.animals.herbivores;
 
+import com.VasilevYuV.island.animals.Animal;
+import com.VasilevYuV.island.animals.Herbivore;
 import com.VasilevYuV.island.config.AnimalConfig;
 
-public class Goat extends Herbivore {
-    private static final AnimalConfig config = AnimalConfig.GOAT;
+public class Sheep extends Herbivore {
+    private static final AnimalConfig config = AnimalConfig.SHEEP;
 
-    public Goat() {
+    public Sheep() {
         super(config.getWeight(), config.getMaxFoodRequired(), config.getMaxSpeed());
     }
 
-    public Goat(double weight, double maxFoodRequired, int maxSpeed) {
+    public Sheep(double weight, double maxFoodRequired, int maxSpeed) {
         super(weight, maxFoodRequired, maxSpeed);
     }
 
@@ -20,6 +22,6 @@ public class Goat extends Herbivore {
 
     @Override
     public double getEatingProbability(Animal animal) {
-        return .0;
+        return 0.0;
     }
 }

@@ -4,12 +4,12 @@ chcp 65001 > NUL
 echo 🏝️ Building Island Simulation...
 cd ..
 call mvn clean package -DskipTests
+call docker build -t island-simulation -f docker/Dockerfile .
 
 if %errorlevel% equ 0 (
     echo ✅ Build successful!
     echo 🐳 Starting Docker containers...
-    docker-compose -f docker/docker-compose.prod.yml down
-    docker-compose -f docker/docker-compose.prod.yml up --build -d
+    docker-compose -f docker/docker-compose.yml up
 
     timeout /t 5 /nobreak > nul
     echo 🎉 Island Simulation is running!

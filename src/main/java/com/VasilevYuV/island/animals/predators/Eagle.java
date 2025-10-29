@@ -1,5 +1,9 @@
-package com.VasilevYuV.island.animals;
+package com.VasilevYuV.island.animals.predators;
 
+import com.VasilevYuV.island.animals.*;
+import com.VasilevYuV.island.animals.herbivores.Duck;
+import com.VasilevYuV.island.animals.herbivores.Mouse;
+import com.VasilevYuV.island.animals.herbivores.Rabbit;
 import com.VasilevYuV.island.config.AnimalConfig;
 
 public class Eagle extends Predator {

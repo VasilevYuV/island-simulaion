@@ -49,29 +49,6 @@ island:
     turn-duration-ms: 1000
     statistics-save-interval: 10
 
-    # Начальная популяция
-    initial-wolves: 10
-    initial-boas: 5
-    initial-foxes: 8
-    initial-bears: 2
-    initial-eagles: 6
-    initial-horses: 15
-    initial-deer: 12
-    initial-rabbits: 50
-    initial-mice: 100
-    initial-goats: 20
-    initial-sheep: 18
-    initial-boars: 10
-    initial-buffalo: 5
-    initial-ducks: 30
-    initial-caterpillars: 200
-    initial-plants: 1000
-
-    # Настройки поведения
-    reproduction-probability: 0.3
-    herbivore-reproduction-bonus: 0.1
-    move-probability: 0.8
-
     # Лимиты
     max-turns-without-animals: 100
     max-total-turns: 10000
@@ -86,14 +63,3 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/island-simulation.log
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always
-    shutdown:
-      enabled: false

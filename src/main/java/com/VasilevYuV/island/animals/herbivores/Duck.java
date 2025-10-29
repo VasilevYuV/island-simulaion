@@ -1,15 +1,17 @@
-package com.VasilevYuV.island.animals;
+package com.VasilevYuV.island.animals.herbivores;
 
+import com.VasilevYuV.island.animals.Animal;
+import com.VasilevYuV.island.animals.Herbivore;
 import com.VasilevYuV.island.config.AnimalConfig;
 
-public class Mouse extends Herbivore {
-    private static final AnimalConfig config = AnimalConfig.MOUSE;
+public class Duck extends Herbivore {
+    private static final AnimalConfig config = AnimalConfig.DUCK;
 
-    public Mouse() {
+    public Duck() {
         super(config.getWeight(), config.getMaxFoodRequired(), config.getMaxSpeed());
     }
 
-    public Mouse(double weight, double maxFoodRequired, int maxSpeed) {
+    public Duck(double weight, double maxFoodRequired, int maxSpeed) {
         super(weight, maxFoodRequired, maxSpeed);
     }
 
@@ -20,7 +22,7 @@ public class Mouse extends Herbivore {
 
     @Override
     public double getEatingProbability(Animal animal) {
-        if (animal instanceof Caterpillar) return 70.0;
+        if (animal instanceof Caterpillar) return 90.0;
         return 0.0;
     }
 }

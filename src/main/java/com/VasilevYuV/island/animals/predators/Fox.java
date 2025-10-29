@@ -1,5 +1,11 @@
-package com.VasilevYuV.island.animals;
+package com.VasilevYuV.island.animals.predators;
 
+import com.VasilevYuV.island.animals.Animal;
+import com.VasilevYuV.island.animals.herbivores.Mouse;
+import com.VasilevYuV.island.animals.Predator;
+import com.VasilevYuV.island.animals.herbivores.Rabbit;
+import com.VasilevYuV.island.animals.herbivores.Caterpillar;
+import com.VasilevYuV.island.animals.herbivores.Duck;
 import com.VasilevYuV.island.config.AnimalConfig;
 
 public class Fox extends Predator {

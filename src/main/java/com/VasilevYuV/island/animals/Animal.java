@@ -1,7 +1,10 @@
 package com.VasilevYuV.island.animals;
 
+import com.VasilevYuV.island.animals.herbivores.*;
+import com.VasilevYuV.island.animals.predators.*;
 import com.VasilevYuV.island.config.AnimalConfig;
 import com.VasilevYuV.island.location.Location;
+import com.VasilevYuV.island.service.IslandService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -33,7 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 })
 public abstract class Animal {
     private static final AtomicLong idCounter = new AtomicLong(0);
-    protected static final Logger log = LoggerFactory.getLogger(Animal.class); // Добавляем логгер
+    protected static final Logger log = LoggerFactory.getLogger(Animal.class);
 
     protected final Long id;
     protected double weight;
@@ -53,8 +56,6 @@ public abstract class Animal {
         this.alive = true;
         this.satiety = maxFoodRequired / 1.5;
     }
-
-    // Абстрактные методы
     public abstract void eat();
 
     public void reproduce() {
@@ -63,23 +64,11 @@ public abstract class Animal {
         try {
             AnimalConfig config = AnimalConfig.valueOf(this.getClass().getSimpleName().toUpperCase());
             double baseReproductionProb = config.getReproductionProbability();
-
-            // ДИНАМИЧЕСКАЯ ВЕРОЯТНОСТЬ с разными коэффициентами для разных типов
             int currentCount = currentLocation.getAnimalsCount(this.getClass());
             int maxCapacity = currentLocation.getMaxAnimalsPerType(this.getClass());
 
             // РАЗНЫЕ КОЭФФИЦИЕНТЫ ПЕРЕНАСЕЛЕНИЯ
-            double overcrowdingFactor;
-            if (isSmallAnimal()) {
-                // МЕЛКИЕ ЖИВОТНЫЕ - очень строгие ограничения
-                overcrowdingFactor = Math.max(0, 1.0 - ((double) currentCount / (maxCapacity * 0.3)));
-            } else if (this instanceof Predator) {
-                // ХИЩНИКИ - мягкие ограничения, стимулируем размножение
-                overcrowdingFactor = Math.max(0.5, 1.0 - ((double) currentCount / (maxCapacity * 0.8)));
-            } else {
-                // КРУПНЫЕ ТРАВОЯДНЫЕ - средние ограничения
-                overcrowdingFactor = Math.max(0, 1.0 - ((double) currentCount / (maxCapacity * 0.6)));
-            }
+            double overcrowdingFactor = getOvercrowdingFactor(currentCount, maxCapacity);
 
             // РАЗНЫЕ ПОРОГИ СЫТОСТИ
             double satietyThreshold;
@@ -124,15 +113,7 @@ public abstract class Animal {
                     currentLocation.addAnimal(baby);
                     baby.setCurrentLocation(currentLocation);
 
-                    // РАЗНЫЕ ЗАТРАТЫ ЭНЕРГИИ
-                    double energyCost;
-                    if (isSmallAnimal()) {
-                        energyCost = maxFoodRequired * 0.4; // Мелкие тратят много
-                    } else if (this instanceof Predator) {
-                        energyCost = maxFoodRequired * 0.2; // Хищники тратят мало
-                    } else {
-                        energyCost = maxFoodRequired * 0.3; // Крупные травоядные - среднее
-                    }
+                    double energyCost = getEnergyCost();
 
                     this.satiety = Math.max(0, this.satiety - energyCost);
 
@@ -145,7 +126,34 @@ public abstract class Animal {
         }
     }
 
-    // Вспомогательный метод для определения мелких животных
+    private double getEnergyCost() {
+        // РАЗНЫЕ ЗАТРАТЫ ЭНЕРГИИ
+        double energyCost;
+        if (isSmallAnimal()) {
+            energyCost = maxFoodRequired * 0.4; // Мелкие тратят много
+        } else if (this instanceof Predator) {
+            energyCost = maxFoodRequired * 0.2; // Хищники тратят мало
+        } else {
+            energyCost = maxFoodRequired * 0.3; // Крупные травоядные - среднее
+        }
+        return energyCost;
+    }
+
+    private double getOvercrowdingFactor(double currentCount, int maxCapacity) {
+        double overcrowdingFactor;
+        if (isSmallAnimal()) {
+            // МЕЛКИЕ ЖИВОТНЫЕ - очень строгие ограничения
+            overcrowdingFactor = Math.max(0, 1.0 - (currentCount / (maxCapacity * 0.3)));
+        } else if (this instanceof Predator) {
+            // ХИЩНИКИ - мягкие ограничения, стимулируем размножение
+            overcrowdingFactor = Math.max(0.5, 1.0 - (currentCount / (maxCapacity * 0.8)));
+        } else {
+            // КРУПНЫЕ ТРАВОЯДНЫЕ - средние ограничения
+            overcrowdingFactor = Math.max(0, 1.0 - (currentCount / (maxCapacity * 0.6)));
+        }
+        return overcrowdingFactor;
+    }
+
     private boolean isSmallAnimal() {
         return this instanceof Rabbit ||
                 this instanceof Mouse ||
@@ -155,8 +163,6 @@ public abstract class Animal {
 
     public abstract boolean canEat(Animal animal);
     public abstract double getEatingProbability(Animal animal);
-
-    // Общие методы
     public void decreaseSatiety() {
         this.satiety = Math.max(0, this.satiety - (maxFoodRequired * 0.1));
         if (this.satiety <= 0) {
@@ -164,16 +170,21 @@ public abstract class Animal {
         }
     }
 
+    // Методы для работы с локациями через сервис
+    protected Location getLocation(int x, int y) {
+        return IslandService.getLocation(x, y);
+    }
+
+    protected boolean isValidLocation(int x, int y) {
+        return IslandService.isValidLocation(x, y);
+    }
+
     // Getters and setters
-    public Long getId() { return id; }
     public double getWeight() { return weight; }
     public boolean isAlive() { return alive; }
     public void setAlive(boolean alive) { this.alive = alive; }
-    public Location getCurrentLocation() { return currentLocation; }
     public void setCurrentLocation(Location location) { this.currentLocation = location; }
     public double getSatiety() { return satiety; }
-    public void setSatiety(double satiety) { this.satiety = satiety; }
-    public String getType() { return this.getClass().getSimpleName().toLowerCase(); }
 
     // Добавляем сеттеры для полей (нужны для рефлексии в SimulationEngine)
     public void setWeight(double weight) { this.weight = weight; }
