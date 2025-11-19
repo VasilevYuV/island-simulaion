@@ -348,6 +348,17 @@ public class SimulationEngine {
         );
     }
 
+    public boolean isRunning() {
+        return running;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+    public int getTurnDurationMs() {
+        return turnDurationMs;
+    }
+
     @PreDestroy
     public void cleanup() {
         if (scheduler != null) {

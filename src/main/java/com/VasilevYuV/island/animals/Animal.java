@@ -185,6 +185,11 @@ public abstract class Animal {
     public void setAlive(boolean alive) { this.alive = alive; }
     public void setCurrentLocation(Location location) { this.currentLocation = location; }
     public double getSatiety() { return satiety; }
+    public void setSatiety(double v) {this.satiety = v;}
+    public double getMaxFoodRequired() {return maxFoodRequired;}
+    public Location getCurrentLocation() {return currentLocation;}
+    public Object getId() {return id;}
+    public int getMaxSpeed() {return maxSpeed;}
 
     // Добавляем сеттеры для полей (нужны для рефлексии в SimulationEngine)
     public void setWeight(double weight) { this.weight = weight; }
